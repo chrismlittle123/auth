@@ -14,6 +14,10 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { spawn, type ChildProcess } from 'child_process';
 import { setTimeout } from 'timers/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const SIGNOZ_URL = process.env['SIGNOZ_URL'] || 'http://localhost:8080';
 const SIGNOZ_API_KEY = process.env['SIGNOZ_API_KEY'] || '';
@@ -32,6 +36,8 @@ describe.skipIf(shouldSkip)('Auth Failure Tracing E2E', () => {
   beforeAll(async () => {
     // Start the backend server with tracing enabled
     const backendDir = path.resolve(__dirname, '../../examples/backend');
+    let serverOutput = '';
+    let serverError = '';
 
     serverProcess = spawn('pnpm', ['start:traced'], {
       cwd: backendDir,
@@ -44,9 +50,10 @@ describe.skipIf(shouldSkip)('Auth Failure Tracing E2E', () => {
       stdio: ['pipe', 'pipe', 'pipe'],
     });
 
-    // Capture trace IDs from server logs
+    // Capture output for debugging
     serverProcess.stdout?.on('data', (data: Buffer) => {
       const output = data.toString();
+      serverOutput += output;
       const traceIdMatch = output.match(/trace_id['":\s]+([a-f0-9]{32})/i);
       if (traceIdMatch) {
         capturedTraceIds.push(traceIdMatch[1]);
@@ -55,15 +62,33 @@ describe.skipIf(shouldSkip)('Auth Failure Tracing E2E', () => {
 
     serverProcess.stderr?.on('data', (data: Buffer) => {
       const output = data.toString();
-      // Also check stderr for trace IDs (pino logs go there sometimes)
+      serverError += output;
       const traceIdMatch = output.match(/trace_id['":\s]+([a-f0-9]{32})/i);
       if (traceIdMatch) {
         capturedTraceIds.push(traceIdMatch[1]);
       }
     });
 
+    serverProcess.on('error', (err) => {
+      console.error('Failed to start server:', err);
+    });
+
+    serverProcess.on('exit', (code) => {
+      if (code !== null && code !== 0) {
+        console.error(`Server exited with code ${code}`);
+        console.error('stdout:', serverOutput);
+        console.error('stderr:', serverError);
+      }
+    });
+
     // Wait for server to be ready
-    await waitForServer(BACKEND_URL, 30000);
+    try {
+      await waitForServer(BACKEND_URL, 30000);
+    } catch (err) {
+      console.error('Server failed to start. Output:', serverOutput);
+      console.error('Server stderr:', serverError);
+      throw err;
+    }
   }, 60000);
 
   afterAll(async () => {
@@ -143,16 +168,18 @@ describe.skipIf(shouldSkip)('Auth Failure Tracing E2E', () => {
  */
 async function waitForServer(url: string, timeout: number): Promise<void> {
   const start = Date.now();
-  const healthUrl = `${url}/health`;
+  // Use /api/public which is marked as public and doesn't require auth
+  const publicUrl = `${url}/api/public`;
 
   while (Date.now() - start < timeout) {
     try {
-      const response = await fetch(healthUrl);
-      if (response.ok) {
+      const response = await fetch(publicUrl);
+      // Server is ready if we get any response (even errors mean the server is running)
+      if (response.ok || response.status === 401 || response.status === 403) {
         return;
       }
     } catch {
-      // Server not ready yet
+      // Server not ready yet (connection refused)
     }
     await setTimeout(500);
   }
