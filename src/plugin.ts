@@ -30,6 +30,12 @@ export interface AuthPluginOptions {
   respectPublicRoutes?: boolean;
 
   /**
+   * Log auth failures using request.log (integrates with OpenTelemetry)
+   * @default true
+   */
+  logFailures?: boolean;
+
+  /**
    * Custom handler for auth failures (logging, metrics, etc.)
    */
   onAuthFailure?: (error: AuthError, request: FastifyRequest) => void;
@@ -62,6 +68,22 @@ async function authPluginImpl(
   // Decorate request with user (initially null)
   fastify.decorateRequest('user', null);
 
+  // Helper to log auth failures
+  const logAuthFailure = (error: AuthError, request: FastifyRequest) => {
+    if (options.logFailures !== false) {
+      request.log.warn({
+        event: 'auth_failure',
+        errorCode: error.code,
+        errorMessage: error.message,
+        method: request.method,
+        url: request.url,
+        ip: request.ip,
+        userAgent: request.headers['user-agent'],
+      }, `Auth failure: ${error.code}`);
+    }
+    options.onAuthFailure?.(error, request);
+  };
+
   // Add auth hook
   fastify.addHook('preHandler', async (request: FastifyRequest, _reply: FastifyReply) => {
     // Check if route is public
@@ -76,7 +98,7 @@ async function authPluginImpl(
     const token = extractToken(request);
     if (!token) {
       const error = new AuthError('UNAUTHORIZED', 'Authentication required');
-      options.onAuthFailure?.(error, request);
+      logAuthFailure(error, request);
       throw error;
     }
 
@@ -85,7 +107,7 @@ async function authPluginImpl(
       request.user = await verifyToken(token, verifyOptions);
     } catch (error) {
       if (isAuthError(error)) {
-        options.onAuthFailure?.(error, request);
+        logAuthFailure(error, request);
       }
       throw error;
     }

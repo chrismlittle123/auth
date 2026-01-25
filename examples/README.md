@@ -72,3 +72,38 @@ pnpm dev
 
 - **Backend:** `@palindrom/fastify-api` + `@palindrom-ai/auth`
 - **Frontend:** Vite + React + `@clerk/clerk-react`
+
+## Running with OpenTelemetry (SigNoz)
+
+To see auth failure logs in SigNoz:
+
+### 1. Configure SigNoz endpoint
+
+Add to `examples/backend/.env`:
+```bash
+OTEL_SERVICE_NAME=auth-example-backend
+OTEL_EXPORTER_OTLP_ENDPOINT=http://your-signoz-host:4318
+```
+
+### 2. Run backend with tracing
+
+```bash
+cd examples/backend
+pnpm dev:traced
+```
+
+### 3. Trigger an auth failure
+
+```bash
+# Call a protected endpoint without a token
+curl http://localhost:3001/api/me
+```
+
+### 4. View in SigNoz
+
+Open SigNoz UI → Logs → Filter by `service.name = auth-example-backend`
+
+You should see logs with:
+- `event: auth_failure`
+- `errorCode: UNAUTHORIZED`
+- Request details (method, url, ip, userAgent)

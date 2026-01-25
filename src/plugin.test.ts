@@ -167,7 +167,12 @@ describe('auth plugin', () => {
         email: 'test@example.com',
         first_name: 'Test',
         last_name: 'User',
-      });
+        __raw: 'raw_token',
+        iss: 'https://clerk.example.com',
+        nbf: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        iat: Math.floor(Date.now() / 1000),
+      } as never);
 
       app.get('/protected', async (request) => {
         return {
