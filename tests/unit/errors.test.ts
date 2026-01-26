@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AuthError, isAuthError } from './errors.js';
+import { AuthError, isAuthError } from '../../src/errors.js';
 
 describe('AuthError', () => {
   describe('constructor', () => {

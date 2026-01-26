@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import type { FastifyRequest } from 'fastify';
-import { extractToken } from './token.js';
+import { extractToken } from '../../src/token.js';
 
 // Mock FastifyRequest factory
 function createMockRequest(options: {

@@ -7,9 +7,9 @@ import {
   requireOrgMembership,
   requireOrgRole,
   getUser,
-} from './permissions.js';
-import { AuthError } from './errors.js';
-import { createMockUser } from './testing/index.js';
+} from '../../src/permissions.js';
+import { AuthError } from '../../src/errors.js';
+import { createMockUser } from '../../src/testing/index.js';
 
 // Mock FastifyRequest factory
 function createMockRequest(user: ReturnType<typeof createMockUser> | null): FastifyRequest {

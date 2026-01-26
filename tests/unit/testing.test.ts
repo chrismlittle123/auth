@@ -6,7 +6,7 @@ import {
   createMockUserWithRoles,
   createMockUserWithScopes,
   createMockOrgUser,
-} from './index.js';
+} from '../../src/testing/index.js';
 
 describe('createMockUser', () => {
   it('creates a user with default values', () => {
