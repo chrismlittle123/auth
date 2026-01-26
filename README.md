@@ -189,36 +189,6 @@ All auth errors return a consistent format:
 | `TOKEN_EXPIRED` | 401 | Token has expired |
 | `FORBIDDEN` | 403 | Valid token but insufficient permissions |
 
-## Testing
-
-Use the test utilities to mock authentication:
-
-```typescript
-import { mockAuth, createMockUser } from '@palindrom-ai/auth/testing'
-
-// In your test setup
-app.decorateRequest('user', null)
-app.addHook('preHandler', mockAuth({ userId: 'test_user' }))
-
-// Or create mock users directly
-const adminUser = createMockUser({
-  userId: 'admin_123',
-  publicMetadata: { roles: ['admin'] }
-})
-```
-
-### Available Test Helpers
-
-```typescript
-import {
-  createMockUser,           // Create a mock UserContext
-  mockAuth,                 // Fastify preHandler that injects mock user
-  createMockUserWithRoles,  // User with roles in publicMetadata
-  createMockUserWithScopes, // User with scopes in publicMetadata
-  createMockOrgUser,        // User with org context
-} from '@palindrom-ai/auth/testing'
-```
-
 ## Frontend Integration
 
 Your frontend should use Clerk's SDK to get a token and pass it in the `Authorization` header:
