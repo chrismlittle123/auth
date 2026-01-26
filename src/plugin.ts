@@ -48,80 +48,85 @@ interface RouteConfig {
   public?: boolean;
 }
 
+function logAuthFailure(
+  error: AuthError,
+  request: FastifyRequest,
+  options: AuthPluginOptions
+): void {
+  if (options.logFailures !== false) {
+    request.log.warn({
+      event: 'auth_failure',
+      errorCode: error.code,
+      errorMessage: error.message,
+      method: request.method,
+      url: request.url,
+      ip: request.ip,
+      userAgent: request.headers['user-agent'],
+    }, `Auth failure: ${error.code}`);
+  }
+  options.onAuthFailure?.(error, request);
+}
+
+function createAuthPreHandler(
+  options: AuthPluginOptions,
+  verifyOptions: TokenVerificationOptions
+) {
+  return async (request: FastifyRequest, _reply: FastifyReply) => {
+    if (options.respectPublicRoutes !== false) {
+      const routeConfig = request.routeOptions.config as RouteConfig | undefined;
+      if (routeConfig?.public) {
+        return;
+      }
+    }
+
+    const token = extractToken(request);
+    if (!token) {
+      const error = new AuthError('UNAUTHORIZED', 'Authentication required');
+      logAuthFailure(error, request, options);
+      throw error;
+    }
+
+    try {
+      request.user = await verifyToken(token, verifyOptions);
+    } catch (error) {
+      if (isAuthError(error)) {
+        logAuthFailure(error, request, options);
+      }
+      throw error;
+    }
+  };
+}
+
+function authErrorHandler(
+  error: Error,
+  _request: FastifyRequest,
+  reply: FastifyReply
+): FastifyReply {
+  if (isAuthError(error)) {
+    return reply.status(error.statusCode).send(error.toResponse());
+  }
+  throw error;
+}
+
 async function authPluginImpl(
   fastify: FastifyInstance,
   options: AuthPluginOptions
 ): Promise<void> {
-  // Validate secret key
   const secretKey = options.secretKey ?? process.env['CLERK_SECRET_KEY'];
   if (!secretKey) {
-    throw new Error('CLERK_SECRET_KEY is required. Set it via options.secretKey or CLERK_SECRET_KEY environment variable.');
+    const msg = 'CLERK_SECRET_KEY is required. Set it via options.secretKey or CLERK_SECRET_KEY environment variable.';
+    throw new Error(msg);
   }
 
-  // Token verification options
   const verifyOptions: TokenVerificationOptions = {
     secretKey,
     authorizedParties: options.authorizedParties,
     jwtKey: options.jwtKey,
   };
 
-  // Decorate request with user (initially null)
   fastify.decorateRequest('user', null);
-
-  // Helper to log auth failures
-  const logAuthFailure = (error: AuthError, request: FastifyRequest) => {
-    if (options.logFailures !== false) {
-      request.log.warn({
-        event: 'auth_failure',
-        errorCode: error.code,
-        errorMessage: error.message,
-        method: request.method,
-        url: request.url,
-        ip: request.ip,
-        userAgent: request.headers['user-agent'],
-      }, `Auth failure: ${error.code}`);
-    }
-    options.onAuthFailure?.(error, request);
-  };
-
-  // Add auth hook
-  fastify.addHook('preHandler', async (request: FastifyRequest, _reply: FastifyReply) => {
-    // Check if route is public
-    if (options.respectPublicRoutes !== false) {
-      const routeConfig = request.routeOptions.config as RouteConfig | undefined;
-      if (routeConfig?.public) {
-        return; // Skip auth for public routes
-      }
-    }
-
-    // Extract token
-    const token = extractToken(request);
-    if (!token) {
-      const error = new AuthError('UNAUTHORIZED', 'Authentication required');
-      logAuthFailure(error, request);
-      throw error;
-    }
-
-    // Verify token
-    try {
-      request.user = await verifyToken(token, verifyOptions);
-    } catch (error) {
-      if (isAuthError(error)) {
-        logAuthFailure(error, request);
-      }
-      throw error;
-    }
-  });
-
-  // Error handler for auth errors
-  fastify.setErrorHandler((error, _request, reply) => {
-    if (isAuthError(error)) {
-      return reply.status(error.statusCode).send(error.toResponse());
-    }
-
-    // Re-throw non-auth errors to default handler
-    throw error;
-  });
+  fastify.addHook('preHandler', createAuthPreHandler(options, verifyOptions));
+  fastify.setErrorHandler(authErrorHandler);
 }
 
 /**
