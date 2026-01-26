@@ -1,6 +1,6 @@
 import type { FastifyRequest } from 'fastify';
 import type { JwtPayload } from '@clerk/types';
-import type { UserContext } from '../context.js';
+import type { UserContext } from '../../src/context.js';
 
 /**
  * Create a mock user context for testing.

@@ -9,7 +9,7 @@ import {
   getUser,
 } from '../../src/permissions.js';
 import { AuthError } from '../../src/errors.js';
-import { createMockUser } from '../../src/testing/index.js';
+import { createMockUser } from '../helpers/mocks.js';
 
 // Mock FastifyRequest factory
 function createMockRequest(user: ReturnType<typeof createMockUser> | null): FastifyRequest {

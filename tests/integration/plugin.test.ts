@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Fastify, { type FastifyInstance } from 'fastify';
 import auth from '../../src/plugin.js';
-import { mockAuth, createMockUser } from '../../src/testing/index.js';
+import { mockAuth, createMockUser } from '../helpers/mocks.js';
 
 // Mock the Clerk verifyToken
 vi.mock('@clerk/backend', () => ({
