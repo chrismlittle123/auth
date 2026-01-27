@@ -1,8 +1,8 @@
-# check.toml - Configuration for check-my-toolkit
+# standards.toml - Configuration for standards-kit conform
 # Fastify authentication plugin for Clerk
 
 [extends]
-registry = "github:palindrom-ai/standards"
+registry = "github:chrismlittle123/standards-community"
 rulesets = ["typescript-internal"]
 
 [code.linting.eslint]
