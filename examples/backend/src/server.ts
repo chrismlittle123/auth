@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import { createApp } from '@palindrom/fastify-api';
+import { createApp } from '@progression-labs/fastify-api';
 import cors from '@fastify/cors';
-import auth, { getUser, requireRole } from '@palindrom-ai/auth';
+import auth, { getUser, requireRole } from '@progression-labs/auth';
 
 const app = await createApp({
   name: 'auth-example',
@@ -15,7 +15,7 @@ const app = await createApp({
   },
   docs: {
     title: 'Auth Example API',
-    description: 'Example API to test @palindrom-ai/auth',
+    description: 'Example API to test @progression-labs/auth',
     version: '0.1.0',
     path: '/docs',
   },

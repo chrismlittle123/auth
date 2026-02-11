@@ -1,6 +1,6 @@
 # Clerk Setup Runbook
 
-Complete guide for setting up Clerk authentication for Palindrom services.
+Complete guide for setting up Clerk authentication for Progression Labs services.
 
 **Last Updated:** 2026-01-25
 
@@ -11,7 +11,7 @@ Complete guide for setting up Clerk authentication for Palindrom services.
 | Item | Status | Details |
 |------|--------|---------|
 | Clerk Account | ✅ Done | Personal workspace |
-| Application | ✅ Done | "Palindrom Development" |
+| Application | ✅ Done | "Progression Labs Development" |
 | Google OAuth | ✅ Done | Using Clerk shared credentials |
 | Microsoft OAuth | ❌ Pending | Toggle in dashboard |
 | GitHub OAuth | ❌ Pending | Toggle in dashboard |
@@ -91,14 +91,14 @@ CLERK_PUBLISHABLE_KEY=pk_test_xxxxx
 
 When you're ready for production, you'll need to:
 
-1. Create a new Clerk application "Palindrom Production"
+1. Create a new Clerk application "Progression Labs Production"
 2. Configure your own OAuth apps (detailed below)
 3. Store production keys in AWS Secrets Manager via Pulumi
 
 ### Step 1: Create Production Application
 
 1. In Clerk dashboard, click "Create Application"
-2. Name: `Palindrom Production`
+2. Name: `Progression Labs Production`
 3. Select sign-in methods (Google, Microsoft, GitHub, Email)
 4. This creates a separate production environment
 
@@ -107,11 +107,11 @@ When you're ready for production, you'll need to:
 **Why:** Production requires your own OAuth credentials for branding, analytics, and control.
 
 1. Go to https://console.cloud.google.com
-2. Create project: `palindrom-auth` (or use existing)
+2. Create project: `progression-labs-auth` (or use existing)
 3. Go to APIs & Services → Credentials
 4. Create OAuth 2.0 Client ID:
    - Type: Web application
-   - Name: `Palindrom Production`
+   - Name: `Progression Labs Production`
    - Authorized redirect URIs: Copy from Clerk dashboard
 5. Copy Client ID and Client Secret
 6. Paste into Clerk → Social Connections → Google
@@ -122,7 +122,7 @@ When you're ready for production, you'll need to:
 1. Go to https://portal.azure.com
 2. Azure Active Directory → App registrations → New registration
 3. Configure:
-   - Name: `Palindrom Auth Production`
+   - Name: `Progression Labs Auth Production`
    - Account types: "Accounts in any organizational directory and personal Microsoft accounts"
    - Redirect URI: Copy from Clerk dashboard
 4. Create client secret (Certificates & secrets → New client secret)
@@ -133,8 +133,8 @@ When you're ready for production, you'll need to:
 
 1. Go to GitHub → Settings → Developer settings → OAuth Apps
 2. New OAuth App:
-   - Name: `Palindrom Production`
-   - Homepage: `https://palindrom.ai`
+   - Name: `Progression Labs Production`
+   - Homepage: `https://progression-labs.ai`
    - Callback URL: Copy from Clerk dashboard
 3. Copy Client ID, generate Client Secret
 4. Paste into Clerk → Social Connections → GitHub
@@ -159,7 +159,7 @@ pulumi up --stack prod
 ### Development (Current)
 
 ```
-Application: Palindrom Development
+Application: Progression Labs Development
 Instance: ins_38jezaTk6mbxlfet3N7upF2tt2r
 Keys: sk_test_*, pk_test_*
 OAuth: Clerk shared credentials
@@ -168,7 +168,7 @@ OAuth: Clerk shared credentials
 ### Staging (Future)
 
 ```
-Application: Palindrom Staging
+Application: Progression Labs Staging
 Instance: (to be created)
 Keys: sk_test_*, pk_test_*
 OAuth: Clerk shared credentials (or own)
@@ -177,7 +177,7 @@ OAuth: Clerk shared credentials (or own)
 ### Production (Future)
 
 ```
-Application: Palindrom Production
+Application: Progression Labs Production
 Instance: (to be created)
 Keys: sk_live_*, pk_live_*
 OAuth: Your own OAuth apps (required)
@@ -221,7 +221,7 @@ OAuth: Your own OAuth apps (required)
 
 ## Next Steps After Setup
 
-1. **Build the auth package** — Implement `@palindrom-ai/auth`
+1. **Build the auth package** — Implement `@progression-labs/auth`
 2. **Integrate with frontend** — Add Clerk React SDK to your app
 3. **Test end-to-end** — Verify frontend → backend auth flow
 4. **Production setup** — When ready to launch

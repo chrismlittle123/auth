@@ -18,8 +18,8 @@
     "@opentelemetry/sdk-logs": "^0.211.0",
     "@opentelemetry/sdk-node": "^0.211.0",
     "@opentelemetry/semantic-conventions": "^1.39.0",
-    "@palindrom-ai/auth": "workspace:*",
-    "@palindrom/fastify-api": "file:../../../fastify-api",
+    "@progression-labs/auth": "workspace:*",
+    "@progression-labs/fastify-api": "file:../../../fastify-api",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {

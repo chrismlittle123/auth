@@ -133,7 +133,7 @@ async function authPluginImpl(
  * Fastify auth plugin wrapping Clerk
  */
 const authPlugin = fp(authPluginImpl, {
-  name: '@palindrom-ai/auth',
+  name: '@progression-labs/auth',
   fastify: '5.x',
 });
 

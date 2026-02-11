@@ -1,18 +1,18 @@
-# @palindrom-ai/auth
+# @progression-labs/auth
 
 Clerk authentication plugin for Fastify services.
 
 ## Installation
 
 ```bash
-pnpm add @palindrom-ai/auth
+pnpm add @progression-labs/auth
 ```
 
 Or link locally:
 ```json
 {
   "dependencies": {
-    "@palindrom-ai/auth": "file:../path/to/auth"
+    "@progression-labs/auth": "file:../path/to/auth"
   }
 }
 ```
@@ -21,7 +21,7 @@ Or link locally:
 
 ```typescript
 import Fastify from 'fastify'
-import auth from '@palindrom-ai/auth'
+import auth from '@progression-labs/auth'
 
 const app = Fastify()
 
@@ -96,7 +96,7 @@ interface UserContext {
 ### requireRole
 
 ```typescript
-import { requireRole } from '@palindrom-ai/auth'
+import { requireRole } from '@progression-labs/auth'
 
 app.get('/admin', {
   preHandler: [requireRole('admin')]
@@ -110,7 +110,7 @@ Checks `request.user.publicMetadata.roles` array.
 ### requireScopes
 
 ```typescript
-import { requireScopes } from '@palindrom-ai/auth'
+import { requireScopes } from '@progression-labs/auth'
 
 app.delete('/api/users/:id', {
   preHandler: [requireScopes(['users:read', 'users:delete'])]
@@ -122,7 +122,7 @@ app.delete('/api/users/:id', {
 ### requireOrgMembership
 
 ```typescript
-import { requireOrgMembership } from '@palindrom-ai/auth'
+import { requireOrgMembership } from '@progression-labs/auth'
 
 app.get('/org/settings', {
   preHandler: [requireOrgMembership()]
@@ -134,7 +134,7 @@ app.get('/org/settings', {
 ### requireOrgRole
 
 ```typescript
-import { requireOrgRole } from '@palindrom-ai/auth'
+import { requireOrgRole } from '@progression-labs/auth'
 
 app.put('/org/settings', {
   preHandler: [requireOrgRole('admin')]
@@ -146,7 +146,7 @@ app.put('/org/settings', {
 ### requirePermission (custom)
 
 ```typescript
-import { requirePermission } from '@palindrom-ai/auth'
+import { requirePermission } from '@progression-labs/auth'
 
 app.get('/premium', {
   preHandler: [requirePermission(
@@ -161,7 +161,7 @@ app.get('/premium', {
 ### getUser
 
 ```typescript
-import { getUser } from '@palindrom-ai/auth'
+import { getUser } from '@progression-labs/auth'
 
 app.get('/api/me', async (request) => {
   const user = getUser(request) // Throws if not authenticated

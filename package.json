@@ -1,5 +1,5 @@
 {
-  "name": "@palindrom-ai/auth",
+  "name": "@progression-labs/auth",
   "version": "0.1.0",
   "description": "Clerk authentication wrapper for Fastify services",
   "type": "module",

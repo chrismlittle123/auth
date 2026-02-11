@@ -1,6 +1,6 @@
 # Auth Package Example
 
-A simple frontend + backend setup to test the `@palindrom-ai/auth` package.
+A simple frontend + backend setup to test the `@progression-labs/auth` package.
 
 ## Setup
 
@@ -70,7 +70,7 @@ pnpm dev
 
 ## Stack
 
-- **Backend:** `@palindrom/fastify-api` + `@palindrom-ai/auth`
+- **Backend:** `@progression-labs/fastify-api` + `@progression-labs/auth`
 - **Frontend:** Vite + React + `@clerk/clerk-react`
 
 ## Running with OpenTelemetry (SigNoz)
