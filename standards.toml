@@ -2,7 +2,7 @@
 # Fastify authentication plugin for Clerk
 
 [extends]
-registry = "github:chrismlittle123/standards-community"
+registry = "github:chrismlittle123/standards"
 rulesets = ["typescript-internal"]
 
 [code.linting.eslint]
