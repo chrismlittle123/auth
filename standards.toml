@@ -20,3 +20,7 @@ enabled = true
 
 [code.security.pnpmaudit]
 enabled = true
+
+[process.ci]
+enabled = true
+require_workflows = ["ci.yml"]
